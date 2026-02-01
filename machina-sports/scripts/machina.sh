@@ -155,6 +155,25 @@ EOF
     echo "➡️  Next: Run mcp__docker_localhost__import_template_from_local(template=\"agent-templates/$slug\", project_path=\"/app/YOUR_REPO/agent-templates/$slug\")"
     ;;
 
+  "agent:run")
+    id=""
+    input="run"
+    while [[ "$#" -gt 0 ]]; do
+      case $1 in
+        --id) id="$2"; shift ;;
+        --input) input="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+      esac
+      shift
+    done
+
+    echo "🤖 Executing Agent $id..."
+    curl -X POST "$API_URL/agent/execute-agent-by-id" \
+      -H "X-Api-Token: $API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"agent_id\": \"$id\", \"input\": {\"text\": \"$input\"}}"
+    ;;
+
   "workflow:run")
     echo "⚠️  To run a workflow, use the MCP tool directly:"
     echo "mcp__machina_client_dev__execute_workflow(name=\"WORKFLOW_NAME\", context={...})"

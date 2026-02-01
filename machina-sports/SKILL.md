@@ -38,7 +38,13 @@ Scaffold a new agent with best-practice directory structure (`agent-templates/`)
 mcp__docker_localhost__import_template_from_local(template="agent-templates/scout", project_path="/app/YOUR_REPO/agent-templates/scout")
 ```
 
-### 2. Fetch Sports Data (Workflow)
+### 2. Execute an Agent
+Run a specific agent by ID.
+```bash
+./scripts/machina.sh agent:run --id "agent_123" --input "Hello"
+```
+
+### 3. Fetch Sports Data (Workflow)
 Trigger a workflow to get the latest odds or stats.
 ```bash
 # Use the MCP tool directly for execution
