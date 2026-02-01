@@ -1,7 +1,7 @@
 {
   "name": "@machina-sports/agent-skills",
   "version": "1.0.0",
-  "description": "Machina Sports SDK Skills for AI Agents",
+  "description": "Official Machina Sports Agent Skills. Build sports agents, fetch odds, and analyze player data.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,8 +10,13 @@
     "ai",
     "agent",
     "skills",
-    "machina",
-    "sports"
+    "sports",
+    "odds",
+    "betting",
+    "nba",
+    "nfl",
+    "soccer",
+    "stats"
   ],
   "author": "Machina Sports",
   "license": "MIT"
