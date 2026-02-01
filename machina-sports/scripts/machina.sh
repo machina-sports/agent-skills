@@ -7,12 +7,6 @@ set -e
 API_URL="${MACHINA_API_URL:-https://api.machinasports.com/v1}"
 API_KEY="${MACHINA_API_KEY}"
 
-if [ -z "$API_KEY" ]; then
-  echo "Error: MACHINA_API_KEY is not set."
-  echo "Export it or add it to your .env file."
-  exit 1
-fi
-
 cmd="$1"
 shift
 
@@ -35,70 +29,152 @@ case "$cmd" in
     fi
 
     slug=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-    mkdir -p "agents/$slug"
+    mkdir -p "agent-templates/$slug"/{agents,workflows,prompts,connectors,tests}
     
-    # Scaffold agent.yml
-    cat > "agents/$slug/agent.yml" <<EOF
-name: $name
-role: $role
-version: 1.0.0
-description: Auto-generated via Machina SDK
+    # Generate _install.yml
+    cat > "agent-templates/$slug/_install.yml" <<EOF
+setup:
+  title: "$name"
+  description: "Agent for $role"
+  category: [custom-agents]
+  version: 1.0.0
+
+datasets:
+  - type: workflow
+    path: workflows/main.yml
+  - type: agent
+    path: agents/main.yml
 EOF
 
-    # Scaffold workflow.yml
-    cat > "agents/$slug/workflow.yml" <<EOF
-trigger: manual
-steps:
-  - id: step_1
-    action: llm.process
-    prompt: "You are $name. Do your job."
+    # Generate agents/main.yml
+    cat > "agent-templates/$slug/agents/main.yml" <<EOF
+agent:
+  name: $slug
+  title: $name
+  description: $role
+  workflows:
+    - name: ${slug}-workflow
+      description: Main workflow
+      inputs:
+        input: $.get('context_value')
+      outputs:
+        result: $.get('result')
+EOF
+
+    # Generate workflows/main.yml
+    cat > "agent-templates/$slug/workflows/main.yml" <<EOF
+workflow:
+  name: ${slug}-workflow
+  title: $name Process
+  inputs:
+    input: $.get('input')
+  outputs:
+    result: $.get('result')
+    workflow-status: 'executed'
+  tasks:
+    - type: prompt
+      name: process-input
+      connector:
+        name: machina-ai
+        command: invoke_prompt
+      inputs:
+        _0-instruction: "You are $name ($role). Process this: "
+        _1-input: $.get('input')
+      outputs:
+        result: $.get('response')
 EOF
     
-    echo "✅ Agent '$name' created at agents/$slug/"
+    echo "✅ Agent '$name' scaffolded at agent-templates/$slug/"
+    echo "➡️  Next: Run mcp__docker_localhost__import_template_from_local(template=\"agent-templates/$slug\", project_path=\"/app/YOUR_REPO/agent-templates/$slug\")"
     ;;
 
   "workflow:run")
-    id=""
-    input="{}"
-    while [[ "$#" -gt 0 ]]; do
-      case $1 in
-        --id) id="$2"; shift ;;
-        --input) input="$2"; shift ;;
-        *) echo "Unknown parameter: $1"; exit 1 ;;
-      esac
-      shift
-    done
-
-    echo "🚀 Triggering Workflow $id..."
-    # Mocking the actual API call for V1 prototype
-    # curl -X POST "$API_URL/workflows/$id/execute" -H "Authorization: Bearer $API_KEY" -d "$input"
-    echo "✅ Workflow triggered. Execution ID: exec_$(date +%s)"
+    echo "⚠️  To run a workflow, use the MCP tool directly:"
+    echo "mcp__machina_client_dev__execute_workflow(name=\"WORKFLOW_NAME\", context={...})"
     ;;
 
   "connector:add")
-    type=""
+    name=""
     while [[ "$#" -gt 0 ]]; do
       case $1 in
-        --type) type="$2"; shift ;;
+        --name) name="$2"; shift ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
       esac
       shift
     done
     
-    echo "📦 Installing connector: $type"
-    mkdir -p "connectors/$type"
-    touch "connectors/$type/connector.py"
-    echo "✅ Connector scaffolded at connectors/$type/"
+    if [ -z "$name" ]; then
+      echo "Error: --name is required."
+      exit 1
+    fi
+
+    slug=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+    mkdir -p "connectors/$slug"
+    
+    # _install.yml
+    cat > "connectors/$slug/_install.yml" <<EOF
+setup:
+  title: "$name Connector"
+  version: 1.0.0
+
+datasets:
+  - type: connector
+    path: $slug.yml
+EOF
+
+    # Definition YAML
+    cat > "connectors/$slug/$slug.yml" <<EOF
+connector:
+  name: $slug
+  description: Custom connector for $name
+  filename: $slug.py
+  filetype: pyscript
+  commands:
+    - name: Fetch Data
+      value: fetch_data
+EOF
+
+    # Python Script
+    cat > "connectors/$slug/$slug.py" <<EOF
+def fetch_data(request_data):
+    """
+    Standard Machina Connector Pattern
+    """
+    headers = request_data.get("headers", {})
+    params = request_data.get("params", {})
+    
+    return {
+        "status": True,
+        "data": {"message": "Hello from $name"},
+        "message": "Success"
+    }
+EOF
+    
+    echo "✅ Connector '$name' scaffolded at connectors/$slug/"
     ;;
 
-  "ops:queues")
-    echo "🔍 Checking Machina Queues..."
-    # Placeholder for kubectl/redis logic
-    echo "✅ Queues Healthy. Pending: 0."
+  "debug:queues")
+    namespace="${2:-default}"
+    echo "🔍 Checking Machina Queue Workers (Namespace: $namespace)..."
+
+    if ! kubectl get deployment machina-worker -n "$namespace" >/dev/null 2>&1; then
+        echo "⚠️  No 'machina-worker' deployment found. Are you connected to the right cluster?"
+        # Fallback for local docker
+        docker-compose ps | grep celery
+        exit 0
+    fi
+
+    echo "--- Worker Pods ---"
+    kubectl get pods -n "$namespace" -l app=machina-worker -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,RESTARTS:.status.containerStatuses[0].restartCount,AGE:.metadata.creationTimestamp
+
+    if kubectl get hpa machina-worker -n "$namespace" >/dev/null 2>&1; then
+        echo -e "\n--- Autoscaling Metrics (Load) ---"
+        kubectl get hpa machina-worker -n "$namespace"
+    fi
     ;;
 
   *)
-    echo "Usage: $0 {agent:create|workflow:run|connector:add|ops:queues}"
+    echo "Usage: $0 {agent:create|workflow:run|connector:add|debug:queues}"
     exit 1
     ;;
 esac

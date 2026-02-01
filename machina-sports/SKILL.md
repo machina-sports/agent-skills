@@ -15,15 +15,32 @@ The definitive skill for building Sports AI. Connect your agent to the Machina S
 ## Capabilities
 
 ### 1. Build a Sports Agent
-Create a specialized agent (e.g., "Odds Analyzer" or "Fantasy Scout").
+Scaffold a new agent with best-practice directory structure (`agent-templates/`).
 ```bash
 ./scripts/machina.sh agent:create --name "Scout" --role "Sports Analyst"
+```
+**Next Step:** Install it using the internal MCP tool:
+```python
+mcp__docker_localhost__import_template_from_local(template="agent-templates/scout", project_path="/app/YOUR_REPO/agent-templates/scout")
 ```
 
 ### 2. Fetch Sports Data (Workflow)
 Trigger a workflow to get the latest odds or stats.
 ```bash
-./scripts/machina.sh workflow:run --id "fetch-odds" --input '{"league": "NBA"}'
+# Use the MCP tool directly for execution
+mcp__machina_client_dev__execute_workflow(name="fetch-odds", context={"league": "NBA"})
+```
+
+### 3. Install Connector
+Download a pre-built connector template.
+```bash
+./scripts/machina.sh connector:add --name "OddsAPI"
+```
+
+### 4. Debug Queues
+Check the health of the Machina worker queues (Kubernetes/Docker).
+```bash
+./scripts/machina.sh debug:queues
 ```
 
 ### 3. Install Connector
