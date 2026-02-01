@@ -1,0 +1,18 @@
+{
+  "name": "@machina-sports/agent-skills",
+  "version": "1.0.0",
+  "description": "Machina Sports SDK Skills for AI Agents",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "machina",
+    "sports"
+  ],
+  "author": "Machina Sports",
+  "license": "MIT"
+}
