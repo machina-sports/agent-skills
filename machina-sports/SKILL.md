@@ -37,12 +37,6 @@ Download a pre-built connector template.
 ./scripts/machina.sh connector:add --name "OddsAPI"
 ```
 
-### 4. Debug Queues
-Check the health of the Machina worker queues (Kubernetes/Docker).
-```bash
-./scripts/machina.sh debug:queues
-```
-
 ### 3. Install Connector
 Download a pre-built connector template.
 ```bash

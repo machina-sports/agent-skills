@@ -154,23 +154,7 @@ EOF
     ;;
 
   "debug:queues")
-    namespace="${2:-default}"
-    echo "🔍 Checking Machina Queue Workers (Namespace: $namespace)..."
-
-    if ! kubectl get deployment machina-worker -n "$namespace" >/dev/null 2>&1; then
-        echo "⚠️  No 'machina-worker' deployment found. Are you connected to the right cluster?"
-        # Fallback for local docker
-        docker-compose ps | grep celery
-        exit 0
-    fi
-
-    echo "--- Worker Pods ---"
-    kubectl get pods -n "$namespace" -l app=machina-worker -o custom-columns=NAME:.metadata.name,STATUS:.status.phase,RESTARTS:.status.containerStatuses[0].restartCount,AGE:.metadata.creationTimestamp
-
-    if kubectl get hpa machina-worker -n "$namespace" >/dev/null 2>&1; then
-        echo -e "\n--- Autoscaling Metrics (Load) ---"
-        kubectl get hpa machina-worker -n "$namespace"
-    fi
+    echo "This command is reserved for self-hosted environments."
     ;;
 
   *)
