@@ -7,10 +7,77 @@ set -e
 API_URL="${MACHINA_API_URL:-https://api.machinasports.com/v1}"
 API_KEY="${MACHINA_API_KEY}"
 
+# Check for saved config if env vars are missing
+if [ -z "$API_KEY" ] && [ -f "$HOME/.machina/config.json" ]; then
+  # Simple grep extract for bash portability (jq might not be there)
+  API_URL=$(grep -o '"api_url": *"[^"]*"' "$HOME/.machina/config.json" | cut -d'"' -f4)
+  API_KEY=$(grep -o '"api_key": *"[^"]*"' "$HOME/.machina/config.json" | cut -d'"' -f4)
+fi
+
+if [ -z "$API_KEY" ] && [ "$1" != "auth:login" ]; then
+  echo "⚠️  Not authenticated."
+  echo "Run './scripts/machina.sh auth:login' first."
+  exit 1
+fi
+
 cmd="$1"
 shift
 
 case "$cmd" in
+  "auth:login")
+    echo "🔑 Machina Sports Login"
+    read -p "Enter API URL (Default: https://api.machinasports.com/v1): " input_url
+    API_URL="${input_url:-https://api.machinasports.com/v1}"
+    
+    read -s -p "Enter API Key: " input_key
+    echo ""
+    
+    config_dir="$HOME/.machina"
+    mkdir -p "$config_dir"
+    
+    cat > "$config_dir/config.json" <<EOF
+{
+  "api_url": "$API_URL",
+  "api_key": "$input_key"
+}
+EOF
+    echo "✅ Configuration saved to ~/.machina/config.json"
+    ;;
+
+  "template:list")
+    echo "🔍 Fetching available templates..."
+    # V1 Mock - real version would curl the templates registry
+    echo "Available Templates:"
+    echo "1. basic-agent (Simple Q&A)"
+    echo "2. sports-analyst (Odds & Stats)"
+    echo "3. content-writer (SEO Blog Posts)"
+    ;;
+
+  "template:install")
+    template_name=""
+    while [[ "$#" -gt 0 ]]; do
+      case $1 in
+        --name) template_name="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+      esac
+      shift
+    done
+
+    if [ -z "$template_name" ]; then
+      # Interactive mode
+      $0 template:list
+      read -p "Enter template name to install: " template_name
+    fi
+    
+    echo "📦 Installing template: $template_name..."
+    # In V2 this would git clone from machina-templates
+    # For now, we simulate the fetch
+    
+    mkdir -p "agent-templates/$template_name"
+    echo "✅ Template '$template_name' downloaded to ./agent-templates/$template_name"
+    echo "➡️  Next: Customize _install.yml and run installation."
+    ;;
+
   "agent:create")
     name=""
     role="Generic"

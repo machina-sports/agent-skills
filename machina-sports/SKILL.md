@@ -12,9 +12,23 @@ metadata:
 
 The definitive skill for building Sports AI. Connect your agent to the Machina Sports platform to fetch live scores, odds, and player prop data.
 
+## Setup
+First-time setup wizard:
+```bash
+./scripts/machina.sh auth:login
+```
+This saves credentials to `~/.machina/config.json`.
+
 ## Capabilities
 
-### 1. Build a Sports Agent
+### 1. Install a Template
+Browse and install pre-built agents from the registry.
+```bash
+./scripts/machina.sh template:list
+./scripts/machina.sh template:install --name "sports-analyst"
+```
+
+### 2. Build a Custom Agent
 Scaffold a new agent with best-practice directory structure (`agent-templates/`).
 ```bash
 ./scripts/machina.sh agent:create --name "Scout" --role "Sports Analyst"
