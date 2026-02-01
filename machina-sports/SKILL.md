@@ -47,8 +47,7 @@ Run a specific agent by ID.
 ### 3. Fetch Sports Data (Workflow)
 Trigger a workflow to get the latest odds or stats.
 ```bash
-# Use the MCP tool directly for execution
-mcp__machina_client_dev__execute_workflow(name="fetch-odds", context={"league": "NBA"})
+./scripts/machina.sh workflow:run --name "fetch-odds" --input '{"league": "NBA"}'
 ```
 
 ### 3. Install Connector

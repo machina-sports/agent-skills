@@ -175,8 +175,38 @@ EOF
     ;;
 
   "workflow:run")
-    echo "⚠️  To run a workflow, use the MCP tool directly:"
-    echo "mcp__machina_client_dev__execute_workflow(name=\"WORKFLOW_NAME\", context={...})"
+    id=""
+    name=""
+    input="{}"
+    context="{}"
+    
+    while [[ "$#" -gt 0 ]]; do
+      case $1 in
+        --id) id="$2"; shift ;;
+        --name) name="$2"; shift ;;
+        --input) input="$2"; shift ;;
+        --context) context="$2"; shift ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+      esac
+      shift
+    done
+
+    if [ -n "$id" ]; then
+      echo "🚀 Triggering Workflow ID: $id..."
+      curl -X POST "$API_URL/workflow/execute-workflow-by-id" \
+        -H "X-Api-Token: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"id\": \"$id\", \"input\": $input, \"context-workflow\": $context, \"skip_delay\": true}"
+    elif [ -n "$name" ]; then
+      echo "🚀 Triggering Workflow Name: $name..."
+      curl -X POST "$API_URL/workflow/execute-workflow-by-name" \
+        -H "X-Api-Token: $API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"name\": \"$name\", \"input\": $input, \"context-workflow\": $context, \"skip_delay\": true}"
+    else
+      echo "Error: Must provide --id or --name"
+      exit 1
+    fi
     ;;
 
   "connector:add")
