@@ -7,6 +7,20 @@ set -e
 API_URL="${MACHINA_API_URL:-https://api.machinasports.com/v1}"
 API_KEY="${MACHINA_API_KEY}"
 
+# ASCII Art Banner
+print_banner() {
+  echo -e "\033[36m"
+  echo "  ███╗   ███╗ █████╗  ██████╗██╗  ██╗██╗███╗   ██╗ █████╗ "
+  echo "  ████╗ ████║██╔══██╗██╔════╝██║  ██║██║████╗  ██║██╔══██╗"
+  echo "  ██╔████╔██║███████║██║     ███████║██║██╔██╗ ██║███████║"
+  echo "  ██║╚██╔╝██║██╔══██║██║     ██╔══██║██║██║╚██╗██║██╔══██║"
+  echo "  ██║ ╚═╝ ██║██║  ██║╚██████╗██║  ██║██║██║ ╚████║██║  ██║"
+  echo "  ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝"
+  echo -e "\033[0m"
+  echo -e "\033[1;30m          S  P  O  R  T  S    S  D  K    v1.0\033[0m"
+  echo ""
+}
+
 # Check for saved config if env vars are missing
 if [ -z "$API_KEY" ] && [ -f "$HOME/.machina/config.json" ]; then
   # Simple grep extract for bash portability (jq might not be there)
@@ -23,8 +37,16 @@ fi
 cmd="$1"
 shift
 
+if [ "$cmd" != "auth:login" ] && [ "$cmd" != "template:list" ]; then
+  # Silent mode for programmatic calls, but banner for humans
+  if [ -t 1 ]; then
+    print_banner
+  fi
+fi
+
 case "$cmd" in
   "auth:login")
+    print_banner
     echo "🔑 Machina Sports Login"
     read -p "Enter API URL (Default: https://api.machinasports.com/v1): " input_url
     API_URL="${input_url:-https://api.machinasports.com/v1}"
