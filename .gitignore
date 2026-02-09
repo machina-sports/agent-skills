@@ -1,0 +1,10 @@
+# Environment files (contain secrets)
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+
+# Node
+node_modules/
