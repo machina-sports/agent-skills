@@ -1,6 +1,6 @@
 # New Agent Skills — Overview
 
-Four new skills to improve code quality, security, and developer experience across our repositories.
+Five new skills to improve code quality, security, and developer experience across our repositories.
 
 ---
 
@@ -172,6 +172,55 @@ Commits:
 
 ---
 
+## 5. pr-deps — PR Dependency Detector
+
+**Problem:** Dev A opens a PR that creates a new API endpoint. Dev B opens another PR that uses that endpoint. Nobody realizes PR #11 depends on PR #10 until the merge breaks everything.
+
+**Solution:** Analyzes open PRs and detects dependencies using three strategies: explicit references in descriptions/commits, branch ancestry, and file overlap analysis.
+
+```bash
+# Scan current branch's PR for dependencies
+bash pr-deps/scripts/pr-deps.sh scan
+
+# Scan a specific PR
+bash pr-deps/scripts/pr-deps.sh scan --pr 12
+
+# Map all open PR dependencies
+bash pr-deps/scripts/pr-deps.sh map
+```
+
+```
+Scanning PR #12: feat: add code quality skills
+Branch:  feat/code-quality
+Repo:    machina-sports/agent-skills
+---
+
+Branch dependencies (your branch is based on these):
+  [BLOCKED] PR #11 (feat: add setup-secrets) — branch 'feat/agent-skills-gh-secrets' not merged yet
+  [BLOCKED] PR #13 (feat: add branch-guard) — branch 'feat/branch-guard' not merged yet
+
+File overlaps (other PRs touching the same files):
+  [OVERLAP] PR #13 (feat: add branch-guard) — 2 shared file(s):
+            - branch-guard/SKILL.md
+            - branch-guard/scripts/branch-guard.sh
+  [OVERLAP] PR #11 (feat: add setup-secrets) — 3 shared file(s):
+            - .env.example
+            - .gitignore
+            - scripts/setup-secrets.sh
+
+---
+Review the dependencies above before merging.
+```
+
+**Highlights:**
+- Three detection layers: references (`depends on #X`), branch ancestry, and file overlaps
+- `scan` for a single PR, `map` for all open PRs at once
+- Shows status of each dependency (OPEN, MERGED, CLOSED)
+- Suggests adding `depends on #X` to PR descriptions for explicit tracking
+- Works with any GitHub repository
+
+---
+
 ## Quick Reference
 
 | Skill | Command | What it does |
@@ -183,5 +232,7 @@ Commits:
 | agent-doctor | `agent-doctor.sh validate-all` | Validates all templates |
 | pr-summary | `pr-summary.sh` | Summarizes current branch diff |
 | pr-summary | `pr-summary.sh --pr 42` | Summarizes a specific PR |
+| pr-deps | `pr-deps.sh scan` | Scans current PR for dependencies |
+| pr-deps | `pr-deps.sh map` | Maps all open PR dependencies |
 
 All skills require only `git` and `gh` (GitHub CLI) — no extra dependencies.
