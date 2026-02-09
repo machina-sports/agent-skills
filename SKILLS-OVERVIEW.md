@@ -1,6 +1,6 @@
 # New Agent Skills — Overview
 
-Three new skills to improve code quality, security, and developer experience across our repositories.
+Four new skills to improve code quality, security, and developer experience across our repositories.
 
 ---
 
@@ -37,7 +37,56 @@ Fix with:
 
 ---
 
-## 2. agent-doctor — Agent Template Validator
+## 2. branch-guard — Branch Sync & Conflict Detector
+
+**Problem:** You work on a feature branch for days, open a PR, and discover you're 15 commits behind main with merge conflicts everywhere.
+
+**Solution:** Checks if your branch is behind the main branch, shows how far you've diverged, and detects which files are likely to conflict before you merge.
+
+```bash
+# Check if your branch is up to date
+bash branch-guard/scripts/branch-guard.sh check
+
+# Detect potential merge conflicts
+bash branch-guard/scripts/branch-guard.sh conflicts
+```
+
+```
+Branch:  feat/my-feature
+Base:    main (origin)
+Behind:  5 commit(s)
+Ahead:   3 commit(s)
+
+Status: Diverged. Your branch is both behind and ahead.
+
+Options:
+  # Rebase (clean history):
+  git pull --rebase origin main
+
+  # Merge (preserve history):
+  git pull origin main
+```
+
+```
+Warning: 2 file(s) modified in both branches:
+
+  - src/api/routes.ts
+  - src/utils/helpers.ts
+
+These files may cause merge conflicts.
+Review them before merging/rebasing.
+```
+
+**Highlights:**
+- Auto-detects `main` or `master` as base branch
+- Shows behind/ahead count with specific suggested commands
+- Crosses file lists from both branches to find conflict-prone files
+- `--no-fetch` for offline mode, `--base <branch>` for custom base
+- Works in any git repository
+
+---
+
+## 3. agent-doctor — Agent Template Validator
 
 **Problem:** A typo in a YAML file or a missing workflow reference breaks the agent at runtime — and the error message is not helpful.
 
@@ -76,7 +125,7 @@ Result: Healthy! No issues found.
 
 ---
 
-## 3. pr-summary — Pull Request Summarizer
+## 4. pr-summary — Pull Request Summarizer
 
 **Problem:** PRs with 10+ files are hard to review. Reviewers waste time figuring out *what changed* before they can evaluate *how it changed*.
 
@@ -128,6 +177,8 @@ Commits:
 | Skill | Command | What it does |
 |-------|---------|-------------|
 | env-sync | `env-sync.sh check` | Compares .env vs GitHub secrets |
+| branch-guard | `branch-guard.sh check` | Checks if branch is behind main |
+| branch-guard | `branch-guard.sh conflicts` | Detects potential merge conflicts |
 | agent-doctor | `agent-doctor.sh validate <path>` | Validates agent template |
 | agent-doctor | `agent-doctor.sh validate-all` | Validates all templates |
 | pr-summary | `pr-summary.sh` | Summarizes current branch diff |
