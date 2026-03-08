@@ -1,50 +1,30 @@
-# Machina Sports Agent Skills
+# Machina Skills
 
-The official SDK for building AI Agents on the **Machina Sports** platform.
+**The official Orchestration & Deployment skills for Machina Cloud.**
 
-This repository contains **Agent Skills** that can be installed directly into AI agents (like Claude Code, Cursor, or OpenClaw) to give them the ability to interact with the Machina Sports ecosystem.
+This repository contains the orchestration skills that teach an AI agent (like Claude Code, Cursor, or OpenClaw) how to interact with a Machina Cloud Pod. 
 
-## 📦 Skills
+These skills act as an "Infrastructure as Code" CLI for AI. They allow an agent to build, validate, and deploy complex YAML templates and connectors directly into a live Machina MongoDB.
 
-### `machina-sports`
-The core builder skill. Gives your agent the ability to:
-- 🏗️ **Scaffold** new Agents and Workflows locally.
-- 🚀 **Execute** Agents and Workflows via the Machina API.
-- 🔌 **Install** data connectors (PyScript/REST).
+## Included Skills
 
-## 🚀 Installation
+1. `machina-sports`: The core SDK. Trigger workflows, run agents, and check queue status on your live pod.
+2. `mkn-constructor`: The YAML generator. Teaches the AI the exact schema required to build custom agents, workflows, and connectors from scratch.
+3. `machina-installer`: The Deployment engine. Allows the AI to fetch pre-built templates from the `machina-templates` repository and push them directly to a pod using the `import_template_from_git` MCP tool.
+4. `machina-secrets`: The Vault manager. Securely injects third-party API keys (OpenAI, Sportradar) into the Machina pod vault.
 
-Install this skill into your agent with one command:
+## Installation
+
+Add this package to your agent's context:
 
 ```bash
-npx skills add machina-sports/agent-skills
+npx skills add machina-sports/machina-skills
 ```
 
-## 🛠️ Usage
+Once installed, simply ask your agent:
+> *"Install the sports-analyst agent to my pod and configure my OpenAI API key."*
 
-Once installed, you can ask your agent to perform tasks like:
+The agent will handle the Git imports, the MCP execution, and the vault configuration automatically.
 
-> "Create a new sports analyst agent named 'Scout'."
-> "Run the 'fetch-odds' workflow for the NBA."
-> "Install a Google Sheets connector."
-
-### Manual Setup
-If you prefer to run the CLI directly:
-
-1. **Authenticate:**
-   ```bash
-   ./scripts/machina.sh auth:login
-   ```
-   (Or set `MACHINA_API_URL` and `MACHINA_API_KEY` in your environment).
-
-2. **Run Commands:**
-   ```bash
-   ./scripts/machina.sh agent:create --name "MyAgent"
-   ./scripts/machina.sh agent:run --id "agent_123" --input "Hello"
-   ```
-
-## 📚 Documentation
-For full platform documentation, visit [docs.machina.gg](https://docs.machina.gg).
-
-## License
-MIT
+---
+*Note: This repository is the orchestration bridge. The actual template source code lives in the `machina-templates` repository.*
