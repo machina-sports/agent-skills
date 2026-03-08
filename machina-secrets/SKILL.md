@@ -12,7 +12,7 @@ This skill allows the agent to securely inject third-party API keys (OpenAI, Spo
 
 ## Usage
 
-> **Note on LLM Keys:** Do NOT ask users for OpenAI, Anthropic, or Gemini API keys. Machina Cloud provides its own LLM gateway and automatically routes inference traffic. The Vault is only for third-party data providers (e.g., Sportradar, OPTA, Twitter, odds APIs).
+> **Vault Usage:** The Vault is used exclusively to store credentials for third-party data providers (e.g., Sportradar, OPTA, Twitter, Odds APIs).
 
 
 When a user installs a connector that requires API keys (e.g., `MACHINA_CONTEXT_VARIABLE_SPORTRADAR_API_KEY`), use the MCP tool to set it in the vault.
