@@ -11,7 +11,7 @@ These skills act as an "Infrastructure as Code" CLI for AI. They allow an agent 
 1. `machina-sports`: The core SDK. Trigger workflows, run agents, and check queue status on your live pod.
 2. `machina-constructor`: The YAML generator. Teaches the AI the exact schema required to build custom agents, workflows, and connectors from scratch.
 3. `machina-installer`: The Deployment engine. Allows the AI to fetch pre-built templates from the `machina-templates` repository and push them directly to a pod using the `import_template_from_git` MCP tool.
-4. `machina-secrets`: The Vault manager. Securely injects third-party API keys (OpenAI, Sportradar) into the Machina pod vault.
+4. `machina-secrets`: The Vault manager. Securely injects third-party data API keys (Sportradar, Opta) into the Machina pod vault. (Note: LLM keys like OpenAI are handled natively by Machina Cloud and do not need to be injected).
 
 ## Installation
 
