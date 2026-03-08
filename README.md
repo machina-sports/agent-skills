@@ -22,7 +22,7 @@ npx skills add machina-sports/machina-skills
 ```
 
 Once installed, simply ask your agent:
-> *"Install the sports-analyst agent to my pod and configure my OpenAI API key."*
+> *"Install the sports-analyst agent to my pod and configure my Sportradar API key."*
 
 The agent will handle the Git imports, the MCP execution, and the vault configuration automatically.
 

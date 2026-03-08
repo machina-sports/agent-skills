@@ -12,14 +12,14 @@ This skill allows the agent to securely inject third-party API keys (OpenAI, Spo
 
 ## Usage
 
-When a user installs a connector that requires API keys (e.g., `MACHINA_CONTEXT_VARIABLE_OPENAI_API_KEY`), use the MCP tool to set it in the vault.
+When a user installs a connector that requires API keys (e.g., `MACHINA_CONTEXT_VARIABLE_SPORTRADAR_API_KEY`), use the MCP tool to set it in the vault.
 
 ### Example MCP Call
 ```python
 mcp__create_secrets({
     "data": {
-        "name": "OPENAI_API_KEY",
-        "key": "sk-proj-..."
+        "name": "SPORTRADAR_API_KEY",
+        "key": "your-sportradar-key"
     }
 })
 ```
@@ -27,6 +27,6 @@ mcp__create_secrets({
 To verify if a secret is already configured:
 ```python
 mcp__check_secrets({
-    "name": "OPENAI_API_KEY"
+    "name": "SPORTRADAR_API_KEY"
 })
 ```
