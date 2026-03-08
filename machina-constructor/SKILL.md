@@ -1,5 +1,5 @@
 ---
-name: mkn-constructor
+name: machina-constructor
 description: Construct and scaffold Machina agent-templates and connectors with correct YAML structure, then install them via MCP. Use when users ask to "create a template", "scaffold an agent", "init template", "build a new connector", "install template", "validate template", "analyze template", "trace agent", or "configure secrets".
 ---
 
